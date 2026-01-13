@@ -9,21 +9,26 @@ pool:
 steps:
 - checkout: self
 
-# Install Trivy (Windows)
+# Install Trivy (Windows - Version 0.68.2)
 - powershell: |
     if (-not (Get-Command trivy -ErrorAction SilentlyContinue)) {
-      Invoke-WebRequest `
-        -Uri https://github.com/aquasecurity/trivy/releases/latest/download/trivy_0.50.1_windows-64bit.zip `
-        -OutFile trivy.zip
 
-      Expand-Archive trivy.zip -DestinationPath trivy
-      Move-Item trivy\trivy.exe C:\Windows\System32\trivy.exe
+      $trivyVersion = "0.68.2"
+      $trivyZip = "trivy_$($trivyVersion)_windows-64bit.zip"
+      $trivyUrl = "https://github.com/aquasecurity/trivy/releases/download/v$trivyVersion/$trivyZip"
+
+      Write-Host "Downloading Trivy from $trivyUrl"
+
+      Invoke-WebRequest -Uri $trivyUrl -OutFile trivy.zip
+
+      Expand-Archive trivy.zip -DestinationPath trivy -Force
+      Copy-Item trivy\trivy.exe C:\Windows\System32\trivy.exe -Force
     }
 
     trivy --version
-  displayName: 'Install Trivy'
+  displayName: 'Install Trivy (Windows)'
 
-# Run Trivy Scan
+# Run Trivy Filesystem (SCA) Scan
 - powershell: |
     trivy fs `
       --severity HIGH,CRITICAL `
