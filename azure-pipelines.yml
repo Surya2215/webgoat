@@ -2,24 +2,29 @@ trigger:
 - dependabot/maven/com.diffplug.spotless-spotless-maven-plugin-3.0.0
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: 'windows-latest'
 
 steps:
 - checkout: self
 
-# Install Trivy
-- script: |
-    sudo apt-get update
-    sudo apt-get install -y wget
-    wget https://github.com/aquasecurity/trivy/releases/latest/download/trivy_0.50.1_Linux-64bit.deb
-    sudo dpkg -i trivy_0.50.1_Linux-64bit.deb
-  displayName: 'Install Trivy'
+# Install Trivy on Windows
+- powershell: |
+    Invoke-WebRequest `
+      -Uri https://github.com/aquasecurity/trivy/releases/latest/download/trivy_0.50.1_windows-64bit.zip `
+      -OutFile trivy.zip
+
+    Expand-Archive trivy.zip -DestinationPath trivy
+
+    Move-Item trivy\trivy.exe C:\Windows\System32\trivy.exe
+
+    trivy --version
+  displayName: 'Install Trivy (Windows)'
 
 # Run Trivy filesystem scan
-- script: |
-    trivy fs \
-      --severity HIGH,CRITICAL \
-      --exit-code 1 \
-      --no-progress \
+- powershell: |
+    trivy fs `
+      --severity HIGH,CRITICAL `
+      --exit-code 1 `
+      --no-progress `
       .
   displayName: 'Run Trivy SCA Scan'
