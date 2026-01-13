@@ -2,7 +2,7 @@ trigger:
 - dependabot/maven/com.diffplug.spotless-spotless-maven-plugin-3.0.0
 
 pool:
-  name: Default
+  name: Azure Pipelines
   demands:
     - agent.name -equals EC2AMAZ-JL1SCA1
 
