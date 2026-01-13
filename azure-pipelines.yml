@@ -4,7 +4,7 @@ trigger:
 pool:
   name: Default
   demands:
-    - agent.name -equals EC2AMAZ-JL1SCA1
+    - agent.name -equals EC2AMAZ-G4LHFD3
 
 steps:
 - checkout: self
